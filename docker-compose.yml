@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+
+  go:
+    image: hanseiboard-go
+    container_name: hanseiboard-go
+    build:
+      context: go
+      dockerfile: ./Dockerfile
+      target: work
+    ports:
+      - 3000:3000
+    networks:
+      - local
+    environment:
+      - LOCALSTACK_HOST=localstack
+    volumes:
+      - gobin:/go/bin:cached
+
+  localstack:
+    container_name: hanseiboard-localstack
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    networks:
+      - local
+    environment:
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    
+networks:
+  local:
+    driver: bridge
+
+volumes:
+  gobin:
+    driver: local

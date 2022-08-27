@@ -1,0 +1,48 @@
+- cloudformationで以下のリソースを作る
+  - s3
+  - dynamodb
+    - 画像を管理するテーブル
+      - altに文言出したいのでinputも保存する
+    - 更新をロックするテーブル
+- AWSのクライアント
+  - endpoint指定で接続できるようにする
+  - s3
+  - dynamodb
+- download API
+  - 画像生成のロジックは今のpreviewを使い回す
+  - s3に登録してキーを返す
+  - dynamodbにカタログ登録する
+- preview APIの修正
+  - 小さくして返す
+  - 斜めにSAMPLEのプリントはできたらやる
+- lambda + api gateway
+  - samのほうがよい？
+    - 構成考えてからで良いかも
+- github登録
+  - リポジトリ作る
+  - CIとかは後でいいかな
+- front
+  - nuxt3やってみる
+  - input
+    - template select
+    - text textarea
+    - color pallete
+    - font select
+  - action
+    - preview
+      - /previewの結果を表示
+    - download
+      - /registerして結果をダウンロード
+  - view
+    - inputのフォーム
+    - actionのボタン
+    - 過去10件の履歴
+      - スライド？カード？
+  - 配置考える
+    - S3+CloudFront?
+    - ドメインもなんとかしないと
+- ログ周り
+  - バックエンドのログはcloudwatch logs
+  - analyticsとかも調べてみる
+- 広告
+  - ad調べる
