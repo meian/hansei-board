@@ -43,7 +43,7 @@ func Preview(ctx *gin.Context) {
 		return
 	}
 	var buf bytes.Buffer
-	if err := jpeg.Encode(&buf, img, &jpeg.Options{Quality: 90}); err != nil {
+	if err := jpeg.Encode(&buf, img, &jpeg.Options{Quality: PConv.Quality}); err != nil {
 		log.Print(err)
 		ctx.String(400, "cannot encode to jpeg")
 		return
