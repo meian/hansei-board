@@ -13,6 +13,7 @@ import (
 	"github.com/meian/hansei-board/go/core/generics"
 	"github.com/meian/hansei-board/go/core/template"
 	"github.com/pkg/errors"
+	xdraw "golang.org/x/image/draw"
 )
 
 type Param struct {
@@ -20,6 +21,7 @@ type Param struct {
 	Text     string
 	FontType font.Type
 	Color    string
+	Scale    float64
 }
 
 func (p Param) Validate(ctx context.Context) error {
@@ -35,6 +37,10 @@ func (p Param) Validate(ctx context.Context) error {
 		validation.Field(&p.Color,
 			validation.Required,
 			validation.Match(regexp.MustCompile("^[0-9a-fA-F]{6}$"))),
+		validation.Field(&p.Scale,
+			validation.Required,
+			validation.Min(0.1),
+			validation.Max(0.999)),
 	)
 }
 
@@ -58,5 +64,14 @@ func Exec(ctx context.Context, p Param) (image.Image, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed at draw")
 	}
-	return img, nil
+	res := image.NewRGBA(scaledRect(img, p.Scale))
+	xdraw.CatmullRom.Scale(res, res.Bounds(), img, img.Bounds(), xdraw.Over, nil)
+	return res, nil
+}
+
+func scaledRect(img image.Image, scale float64) image.Rectangle {
+	b := img.Bounds()
+	w := scale * float64(b.Dx())
+	h := scale * float64(b.Dy())
+	return image.Rect(0, 0, int(w), int(h))
 }

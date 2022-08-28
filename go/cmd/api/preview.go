@@ -23,6 +23,7 @@ func (r PreviewRequest) ToUsecaseParam() preview.Param {
 		Text:     r.Text,
 		FontType: font.Type(r.Font),
 		Color:    r.Color,
+		Scale:    PConv.Scale,
 	}
 }
 
