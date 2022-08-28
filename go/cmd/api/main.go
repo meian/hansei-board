@@ -10,12 +10,15 @@ import (
 )
 
 var (
+	AConf AppConfig
 	PConv PreviewConfig
 )
 
 func main() {
 	envconfig.Process("APP", &AConf)
 	log.Printf("app config: %+v", AConf)
+	envconfig.Process("APP_PREVIEW", &PConv)
+	log.Printf("preview config: %+v", PConv)
 	router := gin.Default()
 	router.GET("/templates", func(ctx *gin.Context) {
 		ctx.JSON(200, template.Names)
