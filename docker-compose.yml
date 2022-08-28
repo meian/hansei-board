@@ -14,7 +14,9 @@ services:
     networks:
       - local
     environment:
+      - APP_IMAGE_BUCKET=s3.localstack
       - APP_PORT=3001
+      - LOCALSTACK_HOST=aws.localstack
     volumes:
       - gobin:/go/bin:cached
 
@@ -24,7 +26,10 @@ services:
     ports:
       - "4566:4566"
     networks:
-      - local
+      local:
+        aliases:
+          - "aws.localstack"
+          - "s3.localstack"
     environment:
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
