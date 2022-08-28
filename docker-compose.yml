@@ -10,11 +10,11 @@ services:
       dockerfile: ./Dockerfile
       target: work
     ports:
-      - 3000:3000
+      - 3001:3001
     networks:
       - local
     environment:
-      - LOCALSTACK_HOST=localstack
+      - APP_PORT=3001
     volumes:
       - gobin:/go/bin:cached
 
