@@ -1,17 +1,26 @@
 package main
 
 import (
+	"os"
+	"strings"
+
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 type Response struct {
-	Message string `json:"message"`
+	Envs map[string]string `json:"environments"`
 }
 
 func Handler() (Response, error) {
-	return Response{
-		Message: "Go Serverless v1.0! Your function executed successfully!",
-	}, nil
+	res := &Response{map[string]string{}}
+	for _, pair := range os.Environ() {
+		facts := strings.SplitN(pair, "=", 2)
+		name, val := facts[0], facts[1]
+		if strings.HasPrefix(name, "APP_") {
+			res.Envs[name] = val
+		}
+	}
+	return *res, nil
 }
 
 func main() {
