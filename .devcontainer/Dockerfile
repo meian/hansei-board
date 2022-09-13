@@ -1,7 +1,7 @@
-ARG VARIANT="1.19-bullseye"
+ARG GO_VERISION="1.19-bullseye"
 
 # goのツールはビルドは重いけどワンバイナリで1箇所にまとまるので別のステージでビルドしてまとめてコピーする
-FROM golang:${VARIANT} as go-tool-builder
+FROM golang:${GO_VERISION} as go-tool-builder
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go install github.com/766b/go-outliner@latest \
@@ -15,11 +15,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     && go install golang.org/x/tools/gopls@latest \
     && go install github.com/dmarkham/enumer@latest
 
-
-# See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.245.0/containers/go/.devcontainer/base.Dockerfile
-
 # [Choice] Go version (use -bullseye variants on local arm64/Apple Silicon): 1, 1.19, 1.18, 1-bullseye, 1.19-bullseye, 1.18-bullseye, 1-buster, 1.19-buster, 1.18-buster
-FROM mcr.microsoft.com/vscode/devcontainers/go:0-${VARIANT}
+FROM mcr.microsoft.com/vscode/devcontainers/go:0-${GO_VERISION}
 
 # [Choice] Node.js version: none, lts/*, 18, 16, 14
 ARG NODE_VERSION="none"
@@ -39,15 +36,21 @@ RUN apt update -y \
     groff \
     less \
     lsb-release \
+    python3 \
+    python3-pip \
     zip
 
-# awscliのインストール
+# awscli
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && ./aws/install \
-    && rm aws awscliv2.zip -rf
+    && rm aws awscliv2.zip -rf \
+    && pip3 install awscli-local
 
-# Dockerのインストール
+# CDK
+RUN npm i -g aws-cdk aws-cdk-local
+
+# Docker
 RUN mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null \
@@ -69,8 +72,7 @@ COPY --from=go-tool-builder /go/bin/* /go/bin
 
 # [Optional] Uncomment the next lines to use go get to install anything else you need
 ARG USER=vscode
+RUN groupadd docker && usermod -aG docker ${USER}
 USER ${USER}
-RUN echo "complete -C '/usr/local/bin/aws_completer' aws" >> /home/${USER}/.bashrc
-
-# [Optional] Uncomment this line to install global node packages.
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
+RUN echo "complete -C '/usr/local/bin/aws_completer' aws" >> /home/${USER}/.bashrc \
+    && echo "complete -C '/usr/local/bin/aws_completer' awslocal" >> /home/${USER}/.bashrc
