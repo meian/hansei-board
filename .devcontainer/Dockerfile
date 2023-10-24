@@ -1,7 +1,8 @@
-ARG GO_VERISION="1.19-bullseye"
+ARG GO_TOOL_VERISION="1.21.3-bookworm"
+ARG GO_VERISION="1.21.3-bookworm"
 
 # goのツールはビルドは重いけどワンバイナリで1箇所にまとまるので別のステージでビルドしてまとめてコピーする
-FROM golang:${GO_VERISION} as go-tool-builder
+FROM golang:${GO_TOOL_VERISION} as go-tool-builder
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go install github.com/766b/go-outliner@latest \
@@ -16,7 +17,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     && go install github.com/dmarkham/enumer@latest
 
 # [Choice] Go version (use -bullseye variants on local arm64/Apple Silicon): 1, 1.19, 1.18, 1-bullseye, 1.19-bullseye, 1.18-bullseye, 1-buster, 1.19-buster, 1.18-buster
-FROM mcr.microsoft.com/vscode/devcontainers/go:0-${GO_VERISION}
+FROM mcr.microsoft.com/vscode/devcontainers/go:${GO_VERISION}
 
 # [Choice] Node.js version: none, lts/*, 18, 16, 14
 ARG NODE_VERSION="none"
@@ -45,7 +46,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     && unzip awscliv2.zip \
     && ./aws/install \
     && rm aws awscliv2.zip -rf \
-    && pip3 install awscli-local
+    && pip3 install  --break-system-packages awscli-local
 
 # CDK
 RUN npm i -g aws-cdk aws-cdk-local
@@ -58,7 +59,7 @@ RUN mkdir -p /etc/apt/keyrings \
     && apt install -y docker-ce-cli docker-compose-plugin
 
 # docker-composeは古いので指定したバージョンに更新
-ARG DCVERSION="2.10.2"
+ARG DCVERSION="2.23.0"
 ENV DCURL="https://github.com/docker/compose/releases/download/v${DCVERSION}/docker-compose-linux-x86_64"
 RUN curl -L ${DCURL} -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
 

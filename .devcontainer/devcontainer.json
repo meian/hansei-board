@@ -8,16 +8,17 @@
 			// Update the VARIANT arg to pick a version of Go: 1, 1.19, 1.18
 			// Append -bullseye or -buster to pin to an OS version.
 			// Use -bullseye variants on local arm64/Apple Silicon.
-			"GO_VERISION": "1.19-bullseye",
+			"GO_TOOL_VERISION": "1.21.3-bookworm",
+			"GO_VERISION": "1.21-bookworm",
 			// Options
-			"NODE_VERSION": "18",
+			"NODE_VERSION": "v21.1.0"
 		}
 	},
 	"runArgs": [
 		"--cap-add=SYS_PTRACE",
 		"--security-opt",
 		"seccomp=unconfined",
-		"--network=hansei-board_local",
+		"--network=hansei-board",
 		"--env-file=envs/app.env",
 		"--env-file=envs/local.env"
 	],
