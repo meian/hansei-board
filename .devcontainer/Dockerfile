@@ -71,8 +71,10 @@ RUN curl -L ${DCOMPURL} -o /etc/bash_completion.d/docker-compose
 COPY --from=go-tool-builder /go/bin/* /go/bin
 
 # [Optional] Uncomment the next lines to use go get to install anything else you need
-ARG USER=vscode
-RUN groupadd docker && usermod -aG docker ${USER}
-USER ${USER}
-RUN echo "complete -C '/usr/local/bin/aws_completer' aws" >> /home/${USER}/.bashrc \
-    && echo "complete -C '/usr/local/bin/aws_completer' awslocal" >> /home/${USER}/.bashrc
+RUN groupadd docker && usermod -aG docker vscode
+USER vscode
+RUN echo "complete -C '/usr/local/bin/aws_completer' aws" >> /home/vscode/.bashrc \
+    && echo "complete -C '/usr/local/bin/aws_completer' awslocal" >> /home/vscode/.bashrc
+
+COPY resources/home/ /home/vscode
+RUN echo . /home/vscode/.aliases >> /home/vscode/.bashrc
