@@ -36,7 +36,9 @@ services:
     
 networks:
   local:
-    driver: bridge
+    driver: external
+    name: hansei-board
+    external: true
 
 volumes:
   gobin:
